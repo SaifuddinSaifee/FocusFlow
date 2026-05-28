@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(copy \"src\\\\middleware.ts\" \"src\\\\proxy.ts\")",
+      "Bash(del \"src\\\\middleware.ts\")",
+      "Bash(Remove-Item \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\\\\src\\\\middleware.ts\")",
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Path \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(dir /s /b \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\")"
+    ]
+  }
+}
