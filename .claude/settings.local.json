@@ -9,7 +9,9 @@
       "Bash(npx tsc *)",
       "Bash(Get-ChildItem -Path \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\" -Directory)",
       "Bash(Select-Object -ExpandProperty Name)",
-      "Bash(dir /s /b \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\")"
+      "Bash(dir /s /b \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\")",
+      "Bash(Get-ChildItem -Path \"d:\\\\Saifuddin\\\\Projects\\\\FocusFlow\\\\src\\\\app\\\\\\(app\\)\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

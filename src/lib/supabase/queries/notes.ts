@@ -9,9 +9,6 @@ export async function getNotes(supabase: DB, userId: string): Promise<Note[]> {
     .from("notes")
     .select("*")
     .eq("user_id", userId)
-    .is("project_id", null)
-    .is("task_id", null)
-    .is("chapter_id", null)
     .order("updated_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
@@ -32,7 +29,6 @@ export async function getNotesByProject(supabase: DB, projectId: string): Promis
     .from("notes")
     .select("*")
     .eq("project_id", projectId)
-    .is("chapter_id", null)
     .order("updated_at", { ascending: false });
   if (error) throw error;
   return data ?? [];

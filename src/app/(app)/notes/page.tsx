@@ -15,7 +15,7 @@ export default async function NotesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-base-content">Notes</h1>
         <p className="text-sm text-base-content/60 mt-0.5">
-          {notes.length} standalone note{notes.length !== 1 ? "s" : ""}
+          {notes.length} note{notes.length !== 1 ? "s" : ""}
         </p>
       </div>
       <NoteList notes={notes} />

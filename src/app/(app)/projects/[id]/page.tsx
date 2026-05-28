@@ -6,6 +6,7 @@ import { getChaptersByProject } from "@/lib/supabase/queries/chapters";
 import { getNotesByProject } from "@/lib/supabase/queries/notes";
 import { getSessionsByProject } from "@/lib/supabase/queries/sessions";
 import { ProjectDetailTabs } from "@/components/projects/ProjectDetailTabs";
+import { StudyMode } from "@/components/courses/StudyMode";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -16,10 +17,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProjectDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }) {
   const { id } = await params;
+  const { mode } = await searchParams;
   const supabase = await createClient();
 
   const project = await getProject(supabase, id).catch(() => null);
@@ -31,6 +35,10 @@ export default async function ProjectDetailPage({
     getNotesByProject(supabase, id).catch(() => []),
     getSessionsByProject(supabase, id).catch(() => []),
   ]);
+
+  if (project.is_course && mode !== "overview") {
+    return <StudyMode project={project} chapters={chapters} notes={notes} />;
+  }
 
   return (
     <ProjectDetailTabs
