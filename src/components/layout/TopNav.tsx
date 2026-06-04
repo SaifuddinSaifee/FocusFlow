@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils/cn";
 
 export function TopNav() {
   const { toggleSidebar } = useUIStore();
-  const { profile } = useAuthStore();
+  const { profile, user } = useAuthStore();
+
+  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
     <header className="h-14 border-b border-base-300 bg-base-200 flex items-center px-4 gap-4">
@@ -30,11 +32,20 @@ export function TopNav() {
 
       {/* User avatar */}
       {profile && (
-        <div className="avatar placeholder">
-          <div className="bg-primary text-primary-content rounded-full w-8">
-            <span className="text-xs font-semibold">
-              {(profile.display_name ?? profile.email)?.[0]?.toUpperCase() ?? "U"}
-            </span>
+        <div className="avatar">
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center overflow-hidden">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={profile.display_name ?? "User"}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="text-xs font-semibold">
+                {(profile.display_name ?? profile.email)?.[0]?.toUpperCase() ?? "U"}
+              </span>
+            )}
           </div>
         </div>
       )}

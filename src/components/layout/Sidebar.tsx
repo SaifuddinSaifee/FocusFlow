@@ -58,11 +58,26 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className={cn("flex items-center gap-3 px-4 py-5 border-b border-base-300", sidebarCollapsed && "justify-center px-0")}>
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-content font-bold text-sm flex-shrink-0">
-          FF
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center text-primary-content shadow-sm flex-shrink-0 relative overflow-hidden group">
+          {/* Subtle wave effect in background */}
+          <div className="absolute inset-0 bg-white/20 translate-y-5 rounded-full blur-md group-hover:translate-y-2 transition-transform duration-500 ease-out" />
+          
+          <svg 
+            className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-sm" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Left F */}
+            <path d="M5 20V8C5 6.34315 6.34315 5 8 5H12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M5 12H10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Right Flowing F */}
+            <path d="M13 20V12C13 10.3431 14.3431 9 16 9H20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M13 16H18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
         </div>
         {!sidebarCollapsed && (
-          <span className="font-semibold text-base-content">FocusFlow</span>
+          <span className="font-bold text-lg text-base-content tracking-tight">Focus<span className="text-primary">Flow</span></span>
         )}
       </div>
 
