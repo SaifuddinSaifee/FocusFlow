@@ -11,9 +11,10 @@ interface TaskFormProps {
   onClose: () => void;
   projectId?: string | null;
   chapterId?: string | null;
+  defaultDeadline?: string | null;
 }
 
-export function TaskForm({ open, onClose, projectId, chapterId }: TaskFormProps) {
+export function TaskForm({ open, onClose, projectId, chapterId, defaultDeadline }: TaskFormProps) {
   const [state, formAction, isPending] = useActionState(
     async (prev: TaskFormState, formData: FormData) => {
       const result = await createTask(prev, formData);
@@ -50,7 +51,7 @@ export function TaskForm({ open, onClose, projectId, chapterId }: TaskFormProps)
         <div className="grid grid-cols-2 gap-3">
           <label className="form-control">
             <div className="label pb-1"><span className="label-text">Deadline</span></div>
-            <input type="date" name="deadline" className="input input-bordered input-sm" />
+            <input type="date" name="deadline" defaultValue={defaultDeadline ?? ""} className="input input-bordered input-sm" />
           </label>
 
           <label className="form-control">

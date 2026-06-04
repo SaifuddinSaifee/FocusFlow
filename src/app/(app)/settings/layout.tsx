@@ -4,7 +4,6 @@ export const metadata = { title: "Settings — FocusFlow" };
 
 const settingsNav = [
   { href: "/settings/profile", label: "Profile" },
-  { href: "/settings/timer", label: "Timer" },
   { href: "/settings/account", label: "Account" },
 ];
 

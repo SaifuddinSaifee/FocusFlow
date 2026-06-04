@@ -44,10 +44,16 @@ export async function createProject(
   let videoId: string | null = null;
 
   if (data.is_course && data.youtube_link) {
+    try {
+      new URL(data.youtube_link.trim());
+    } catch {
+      return { error: "Please enter a valid URL (e.g. https://www.udemy.com/... or a YouTube link)" };
+    }
     const ytParsed = parseYouTubeUrl(data.youtube_link);
-    if (ytParsed.type === "invalid") return { error: "Invalid YouTube URL" };
-    playlistId = ytParsed.playlistId ?? null;
-    videoId = ytParsed.videoId ?? null;
+    if (ytParsed.type !== "invalid") {
+      playlistId = ytParsed.playlistId ?? null;
+      videoId = ytParsed.videoId ?? null;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -65,9 +65,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.task_count > 0 && (
                 <span>{project.done_task_count}/{project.task_count} tasks</span>
               )}
-              {project.session_count > 0 && (
-                <span>⏱ {project.session_count} sessions</span>
-              )}
             </div>
           </div>
         </div>

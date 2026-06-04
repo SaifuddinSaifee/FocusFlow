@@ -1,10 +1,5 @@
-import { TimerSettings } from "@/components/settings/TimerSettings";
+import { redirect } from "next/navigation";
 
 export default function TimerSettingsPage() {
-  return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">Timer Preferences</h2>
-      <TimerSettings />
-    </div>
-  );
+  redirect("/settings/profile");
 }

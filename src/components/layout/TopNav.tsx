@@ -1,22 +1,16 @@
 "use client";
 
 import { useUIStore } from "@/stores/uiStore";
-import { useTimerStore } from "@/stores/timerStore";
 import { useAuthStore } from "@/stores/authStore";
-import { TimerPill } from "./TimerPill";
 import { ThemeToggle } from "./ThemeToggle";
-import { formatTimer } from "@/lib/utils/formatDate";
 import { cn } from "@/lib/utils/cn";
 
 export function TopNav() {
   const { toggleSidebar } = useUIStore();
-  const { status, secondsRemaining, mode } = useTimerStore();
   const { profile } = useAuthStore();
 
-  const isTimerActive = status === "running" || status === "paused";
-
   return (
-    <header className="h-14 border-b border-base-300 bg-base-100 flex items-center px-4 gap-4">
+    <header className="h-14 border-b border-base-300 bg-base-200 flex items-center px-4 gap-4">
       {/* Sidebar toggle */}
       <button
         onClick={toggleSidebar}
@@ -30,9 +24,6 @@ export function TopNav() {
 
       {/* Spacer */}
       <div className="flex-1" />
-
-      {/* Timer pill */}
-      <TimerPill />
 
       {/* Theme toggle */}
       <ThemeToggle />
