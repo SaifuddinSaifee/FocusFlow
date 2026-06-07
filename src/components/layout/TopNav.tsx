@@ -1,22 +1,18 @@
 "use client";
 
 import { useUIStore } from "@/stores/uiStore";
-import { useTimerStore } from "@/stores/timerStore";
 import { useAuthStore } from "@/stores/authStore";
-import { TimerPill } from "./TimerPill";
 import { ThemeToggle } from "./ThemeToggle";
-import { formatTimer } from "@/lib/utils/formatDate";
 import { cn } from "@/lib/utils/cn";
 
 export function TopNav() {
   const { toggleSidebar } = useUIStore();
-  const { status, secondsRemaining, mode } = useTimerStore();
-  const { profile } = useAuthStore();
+  const { profile, user } = useAuthStore();
 
-  const isTimerActive = status === "running" || status === "paused";
+  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
-    <header className="h-14 border-b border-base-300 bg-base-100 flex items-center px-4 gap-4">
+    <header className="h-14 border-b border-base-300 bg-base-200 flex items-center px-4 gap-4">
       {/* Sidebar toggle */}
       <button
         onClick={toggleSidebar}
@@ -31,19 +27,25 @@ export function TopNav() {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Timer pill */}
-      <TimerPill />
-
       {/* Theme toggle */}
       <ThemeToggle />
 
       {/* User avatar */}
       {profile && (
-        <div className="avatar placeholder">
-          <div className="bg-primary text-primary-content rounded-full w-8">
-            <span className="text-xs font-semibold">
-              {(profile.display_name ?? profile.email)?.[0]?.toUpperCase() ?? "U"}
-            </span>
+        <div className="avatar">
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center overflow-hidden">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={profile.display_name ?? "User"}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="text-xs font-semibold">
+                {(profile.display_name ?? profile.email)?.[0]?.toUpperCase() ?? "U"}
+              </span>
+            )}
           </div>
         </div>
       )}

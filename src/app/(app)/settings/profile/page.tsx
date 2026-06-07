@@ -8,8 +8,13 @@ export default async function ProfileSettingsPage() {
   const profile = user ? await getProfile(supabase, user.id).catch(() => null) : null;
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">Profile</h2>
+    <div className="max-w-2xl">
+      <div className="mb-8 pb-6 border-b border-base-200/60">
+        <h2 className="text-xl font-bold text-base-content">Public Profile</h2>
+        <p className="text-sm text-base-content/60 mt-1">
+          This information will be displayed on your profile and across the app.
+        </p>
+      </div>
       {profile && <ProfileForm profile={profile} />}
     </div>
   );

@@ -4,7 +4,7 @@ import { getProject } from "@/lib/supabase/queries/projects";
 import { getTasksByProject } from "@/lib/supabase/queries/tasks";
 import { getChaptersByProject } from "@/lib/supabase/queries/chapters";
 import { getNotesByProject } from "@/lib/supabase/queries/notes";
-import { getSessionsByProject } from "@/lib/supabase/queries/sessions";
+import { getProjectResources } from "@/lib/supabase/queries/resources";
 import { ProjectDetailTabs } from "@/components/projects/ProjectDetailTabs";
 import { StudyMode } from "@/components/courses/StudyMode";
 
@@ -29,11 +29,11 @@ export default async function ProjectDetailPage({
   const project = await getProject(supabase, id).catch(() => null);
   if (!project) notFound();
 
-  const [tasks, chapters, notes, sessions] = await Promise.all([
+  const [tasks, chapters, notes, resources] = await Promise.all([
     getTasksByProject(supabase, id).catch(() => []),
     project.is_course ? getChaptersByProject(supabase, id).catch(() => []) : Promise.resolve([]),
-    getNotesByProject(supabase, id).catch(() => []),
-    getSessionsByProject(supabase, id).catch(() => []),
+    getNotesByProject(supabase, id).then(list => list.filter(n => n.title !== "PROJECT_RESOURCES")).catch(() => []),
+    getProjectResources(supabase, id).catch(() => []),
   ]);
 
   if (project.is_course && mode !== "overview") {
@@ -46,7 +46,7 @@ export default async function ProjectDetailPage({
       tasks={tasks}
       chapters={chapters}
       notes={notes}
-      sessions={sessions}
+      resources={resources}
     />
   );
 }

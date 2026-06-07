@@ -11,9 +11,10 @@ interface TaskItemProps {
   task: Task;
   projectId?: string | null;
   onEdit?: (task: Task) => void;
+  draggable?: boolean;
 }
 
-export function TaskItem({ task, projectId, onEdit }: TaskItemProps) {
+export function TaskItem({ task, projectId, onEdit, draggable }: TaskItemProps) {
   const [isPending, startTransition] = useTransition();
   const overdue = task.deadline && isOverdue(task.deadline) && task.status !== "Done";
 
@@ -36,11 +37,19 @@ export function TaskItem({ task, projectId, onEdit }: TaskItemProps) {
     });
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData("text/plain", task.id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
   return (
     <div
+      draggable={draggable}
+      onDragStart={draggable ? handleDragStart : undefined}
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg border border-base-300 bg-base-100 group hover:border-base-content/20 transition-colors",
-        task.status === "Done" && "opacity-60"
+        task.status === "Done" && "opacity-60",
+        draggable && "cursor-grab active:cursor-grabbing hover:shadow-sm"
       )}
     >
       <input

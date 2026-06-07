@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getProjectsWithStats } from "@/lib/supabase/queries/projects";
 import { getTodayTasks, getPrioritySummary } from "@/lib/supabase/queries/tasks";
-import { getActivityGraph } from "@/lib/supabase/queries/sessions";
 import { getProfile } from "@/lib/supabase/queries/profiles";
 import { TodayPanel } from "@/components/dashboard/TodayPanel";
 import { ProgressRingsGrid } from "@/components/dashboard/ProgressRingsGrid";
 import { StreakCard } from "@/components/dashboard/StreakCard";
-import { ActivityGraph } from "@/components/dashboard/ActivityGraph";
 import { CourseProgressList } from "@/components/dashboard/CourseProgressList";
 import { PrioritySummary } from "@/components/dashboard/PrioritySummary";
 
@@ -18,11 +16,10 @@ export default async function DashboardPage() {
 
   if (!user) return null;
 
-  const [todayTasks, projects, activityGraph, prioritySummary, profile] =
+  const [todayTasks, projects, prioritySummary, profile] =
     await Promise.all([
       getTodayTasks(supabase, user.id).catch(() => []),
       getProjectsWithStats(supabase, user.id).catch(() => []),
-      getActivityGraph(supabase, user.id, 30).catch(() => []),
       getPrioritySummary(supabase, user.id).catch(() => ({ high: 0, medium: 0, low: 0 })),
       getProfile(supabase, user.id).catch(() => null),
     ]);
@@ -49,13 +46,10 @@ export default async function DashboardPage() {
           {profile && <StreakCard profile={profile} />}
         </div>
 
-        {/* Center column — Progress rings + Activity graph */}
+        {/* Center column — Progress rings */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {activeProjects.length > 0 && (
             <ProgressRingsGrid projects={activeProjects} />
-          )}
-          {activityGraph.length > 0 && (
-            <ActivityGraph data={activityGraph} />
           )}
           {courses.length > 0 && (
             <CourseProgressList courses={courses} />

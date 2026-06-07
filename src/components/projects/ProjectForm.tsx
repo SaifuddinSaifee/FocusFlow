@@ -88,7 +88,7 @@ export function ProjectForm({ onSuccess, onCancel }: ProjectFormProps) {
             checked={isCourse}
             onChange={(e) => setIsCourse(e.target.checked)}
           />
-          <span className="label-text font-medium">This is a course (YouTube videos)</span>
+          <span className="label-text font-medium">This is a course (YouTube, Udemy, etc.)</span>
         </label>
         <input type="hidden" name="is_course" value={String(isCourse)} />
       </div>
@@ -96,13 +96,13 @@ export function ProjectForm({ onSuccess, onCancel }: ProjectFormProps) {
       {isCourse && (
         <label className="form-control">
           <div className="label pb-1">
-            <span className="label-text font-medium">YouTube URL *</span>
-            <span className="label-text-alt text-base-content/50">Video or playlist URL</span>
+            <span className="label-text font-medium">Course Link *</span>
+            <span className="label-text-alt text-base-content/50">YouTube or external course URL (e.g. Udemy)</span>
           </div>
           <input
             type="url"
             name="youtube_link"
-            placeholder="https://youtube.com/playlist?list=..."
+            placeholder="e.g. https://www.udemy.com/course/... or YouTube playlist"
             className="input input-bordered"
             required={isCourse}
           />

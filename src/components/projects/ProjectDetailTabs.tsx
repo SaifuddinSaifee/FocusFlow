@@ -7,29 +7,30 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { TaskKanban } from "@/components/tasks/TaskKanban";
 import { NoteList } from "@/components/notes/NoteList";
 import { CourseView } from "@/components/courses/CourseView";
-import { SessionLog } from "@/components/timer/SessionLog";
 import { formatDeadline } from "@/lib/utils/formatDate";
 import { cn } from "@/lib/utils/cn";
 import { updateProjectStatus, deleteProject } from "@/actions/projects";
 import { useRouter } from "next/navigation";
-import type { Project, Task, Chapter, Note, FocusSession } from "@/types/app.types";
+import type { Project, Task, Chapter, Note } from "@/types/app.types";
+import { ProjectResources } from "./ProjectResources";
+import type { ProjectResource } from "@/lib/supabase/queries/resources";
 
 interface ProjectDetailTabsProps {
   project: Project;
   tasks: Task[];
   chapters: Chapter[];
   notes: Note[];
-  sessions: FocusSession[];
+  resources: ProjectResource[];
 }
 
-type Tab = "overview" | "tasks" | "notes" | "chapters" | "sessions";
+type Tab = "overview" | "tasks" | "notes" | "chapters" | "resources";
 
 export function ProjectDetailTabs({
   project,
   tasks,
   chapters,
   notes,
-  sessions,
+  resources,
 }: ProjectDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const router = useRouter();
@@ -51,7 +52,7 @@ export function ProjectDetailTabs({
     ...(project.is_course
       ? [{ id: "chapters" as Tab, label: "Course", count: chapters.length }]
       : []),
-    { id: "sessions", label: "Sessions", count: sessions.length },
+    { id: "resources", label: "Resources", count: resources.length },
   ];
 
   const handleDelete = async () => {
@@ -165,11 +166,6 @@ export function ProjectDetailTabs({
                 <div className="stat-desc">completed</div>
               </div>
               <div className="stat bg-base-200 rounded-xl p-4">
-                <div className="stat-title text-xs">Sessions</div>
-                <div className="stat-value text-2xl">{sessions.length}</div>
-                <div className="stat-desc">focus sessions</div>
-              </div>
-              <div className="stat bg-base-200 rounded-xl p-4">
                 <div className="stat-title text-xs">Notes</div>
                 <div className="stat-value text-2xl">{notes.length}</div>
                 <div className="stat-desc">attached notes</div>
@@ -198,8 +194,8 @@ export function ProjectDetailTabs({
             <CourseView project={project} chapters={chapters} notes={notes} />
           )}
 
-          {activeTab === "sessions" && (
-            <SessionLog sessions={sessions} />
+          {activeTab === "resources" && (
+            <ProjectResources projectId={project.id} initialResources={resources} />
           )}
         </div>
       </div>

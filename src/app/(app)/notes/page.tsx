@@ -8,7 +8,11 @@ export default async function NotesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const notes = user ? await getNotes(supabase, user.id).catch(() => []) : [];
+  const notes = user
+    ? await getNotes(supabase, user.id)
+        .then((list) => list.filter((n) => n.title !== "PROJECT_RESOURCES"))
+        .catch(() => [])
+    : [];
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

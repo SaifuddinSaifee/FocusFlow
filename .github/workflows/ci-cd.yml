@@ -1,0 +1,131 @@
+name: FocusFlow CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - 'tsconfig.json'
+      - 'postcss.config.mjs'
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'Target Environment for Deployment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  NODE_VERSION: '20.x'
+
+# Principle of least privilege: Set default permissions to read-only
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup Node and Install Dependencies
+        uses: ./.github/actions/setup-project
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Type Check
+        run: npx tsc --noEmit
+
+      - name: Lint Codebase
+        run: npm run lint
+
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: validate
+    # Only deploy from main branch, prevent running on pull requests
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Needed to push to GitHub Container Registry (GHCR)
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.3.0
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5.3.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  deploy:
+    name: Deploy to Cloud Platform
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment:
+      # Use dynamic environment based on manual trigger input, default to production for push to main
+      name: ${{ github.event.inputs.deploy_env || 'production' }}
+    steps:
+      - name: Trigger Deployment
+        run: |
+          echo "🚀 Deploying image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}"
+          echo "🌍 Target Environment: ${{ github.event.inputs.deploy_env || 'production' }}"
+          
+          # ----------------------------------------------------------------------
+          # Example Webhook Deployment (e.g., to Render, Railway, Portainer, etc.)
+          # ----------------------------------------------------------------------
+          # curl -X POST -H "Authorization: Bearer ${{ secrets.DEPLOY_WEBHOOK_SECRET }}" \
+          #   -H "Content-Type: application/json" \
+          #   -d '{"image": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}"}' \
+          #   https://api.your-cloud-provider.com/deploy
+          
+          # ----------------------------------------------------------------------
+          # Example SSH Deployment (e.g., to EC2 or DigitalOcean Droplet)
+          # ----------------------------------------------------------------------
+          # Need to use appleboy/ssh-action to SSH into instance, pull image and restart container

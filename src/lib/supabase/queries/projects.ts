@@ -35,22 +35,20 @@ export async function getProjectsWithStats(supabase: DB, userId: string) {
 
   const projectIds = (projects as Project[]).map((p) => p.id);
 
-  const [{ data: taskCounts }, { data: sessionCounts }, { data: chapterCounts }] =
+  const [{ data: taskCounts }, { data: chapterCounts }] =
     await Promise.all([
       supabase.from("tasks").select("project_id, status").in("project_id", projectIds),
-      supabase.from("focus_sessions").select("project_id").in("project_id", projectIds),
       supabase.from("chapters").select("project_id, is_watched").in("project_id", projectIds),
     ]);
 
   return (projects as Project[]).map((project) => {
     const tasks = (taskCounts ?? []).filter((t: { project_id: string; status: string }) => t.project_id === project.id);
-    const sessions = (sessionCounts ?? []).filter((s: { project_id: string }) => s.project_id === project.id);
     const chapters = (chapterCounts ?? []).filter((c: { project_id: string; is_watched: boolean }) => c.project_id === project.id);
     return {
       ...project,
       task_count: tasks.length,
       done_task_count: tasks.filter((t: { status: string }) => t.status === "Done").length,
-      session_count: sessions.length,
+      session_count: 0,
       watched_chapters: chapters.filter((c: { is_watched: boolean }) => c.is_watched).length,
     };
   });
